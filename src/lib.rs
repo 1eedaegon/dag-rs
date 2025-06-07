@@ -16,14 +16,14 @@ pub enum DagError {
  * Node data: N
  * Edge data: E
  */
-pub trait DagImpl<N, E> {
+pub trait DagImpl<N> {
     fn add_node(&mut self, data: N) -> NodeId;
     /**
      * TODO: Implement check if exists for node and edges
      * Node and Edge Validation
      */
     // If cyclic dependency is detected, return Err(DagError::CycleDetected)
-    fn add_edge(&mut self, from: NodeId, to: NodeId, data: E) -> Result<()>;
+    fn add_edge(&mut self, from: NodeId, to: NodeId) -> Result<()>;
     fn remove_node(&mut self, node_id: NodeId) -> Result<()>;
     fn remove_edge(&mut self, from: NodeId, to: NodeId) -> Result<()>;
     fn has_node(&self, node_id: NodeId) -> bool;
@@ -61,26 +61,23 @@ pub trait DagImpl<N, E> {
      * TODO: Data
      */
     fn add_node_with_data(&mut self, data: N) -> NodeId;
-    fn add_edge_with_data(&mut self, from: NodeId, to: NodeId, data: E) -> Result<()>;
+    fn add_edge_with_data(&mut self, from: NodeId, to: NodeId) -> Result<()>;
     fn get_node_data(&self, node_id: NodeId) -> Option<&N>;
-    fn get_edge_data(&self, from: NodeId, to: NodeId) -> Option<&E>;
 }
 
 /**
  * Node data: N
- * Edge data: E
  */
-pub struct Dag<N, E> {
-    backend: Box<dyn DagImpl<N, E>>,
+pub struct Dag<N> {
+    backend: Box<dyn DagImpl<N>>,
 }
-impl<N, E> Dag<N, E>
+impl<N> Dag<N>
 where
     N: 'static + Clone,
-    E: 'static + Clone,
 {
     pub fn new() -> Self {
         Self {
-            backend: Box::new(AdjListDag::<N, E>::new()),
+            backend: Box::new(AdjListDag::<N>::new()),
         }
     }
     pub fn add_node(&mut self, data: N) -> NodeId {
@@ -91,8 +88,8 @@ where
      * Node and Edge Validation
      */
     // If cyclic dependency is detected, return Err(DagError::CycleDetected)
-    pub fn add_edge(&mut self, from: NodeId, to: NodeId, data: E) -> Result<()> {
-        self.backend.add_edge(from, to, data)
+    pub fn add_edge(&mut self, from: NodeId, to: NodeId) -> Result<()> {
+        self.backend.add_edge(from, to)
     }
     pub fn remove_node(&mut self, node_id: NodeId) -> Result<()> {
         self.backend.remove_node(node_id)
@@ -128,21 +125,17 @@ where
     pub fn add_node_with_data(&mut self, data: N) -> NodeId {
         self.backend.add_node_with_data(data)
     }
-    pub fn add_edge_with_data(&mut self, from: NodeId, to: NodeId, data: E) -> Result<()> {
-        self.backend.add_edge_with_data(from, to, data)
+    pub fn add_edge_with_data(&mut self, from: NodeId, to: NodeId) -> Result<()> {
+        self.backend.add_edge_with_data(from, to)
     }
     pub fn get_node_data(&self, node_id: NodeId) -> Option<&N> {
         self.backend.get_node_data(node_id)
     }
-    pub fn get_edge_data(&self, from: NodeId, to: NodeId) -> Option<&E> {
-        self.backend.get_edge_data(from, to)
-    }
 }
 
-impl<N, E> Default for Dag<N, E>
+impl<N> Default for Dag<N>
 where
     N: 'static + Clone,
-    E: 'static + Clone,
 {
     fn default() -> Self {
         Self::new()

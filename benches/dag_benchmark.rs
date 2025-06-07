@@ -34,8 +34,8 @@ fn bench_add_edges_linear(c: &mut Criterion) {
                 },
                 |(mut dag, nodes)| {
                     for i in 0..(s - 1) {
-                        // 에러는 무시, 성능 측정에 집중
-                        let _ = dag.add_edge(nodes[i], nodes[i + 1], ());
+                        // TODO: 에러는 무시, 성능 측정에 집중
+                        let _ = dag.add_edge(nodes[i], nodes[i + 1]);
                     }
                 },
             );
@@ -48,11 +48,10 @@ fn bench_add_edges_linear(c: &mut Criterion) {
 fn bench_topological_sort(c: &mut Criterion) {
     let mut group = c.benchmark_group("topological_sort");
     for size in SIZES.iter() {
-        // 미리 그래프 생성
         let mut dag = Dag::<usize, ()>::new();
         let nodes: Vec<_> = (0..*size).map(|i| dag.add_node(i)).collect();
         for i in 0..(*size - 1) {
-            dag.add_edge(nodes[i], nodes[i + 1], ()).unwrap();
+            dag.add_edge(nodes[i], nodes[i + 1]).unwrap();
         }
 
         group.bench_with_input(BenchmarkId::new("AdjListDag", size), &dag, |b, d| {

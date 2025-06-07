@@ -19,8 +19,8 @@ fn test_add_and_has_edge() {
     let n1 = dag.add_node(());
     let n2 = dag.add_node(());
 
-    assert!(dag.add_edge(n0, n1, "n0->n1").is_ok());
-    assert!(dag.add_edge(n1, n2, "n1->n2").is_ok());
+    assert!(dag.add_edge(n0, n1).is_ok());
+    assert!(dag.add_edge(n1, n2).is_ok());
 
     assert!(dag.has_edge(n0, n1));
     assert!(!dag.has_edge(n1, n0));
@@ -37,13 +37,13 @@ fn test_cycle_detection() {
     let n1 = dag.add_node(());
     let n2 = dag.add_node(());
 
-    dag.add_edge(n0, n1, ()).unwrap();
-    dag.add_edge(n1, n2, ()).unwrap();
+    dag.add_edge(n0, n1).unwrap();
+    dag.add_edge(n1, n2).unwrap();
 
     // n2 -> n0 간선은 n0 -> n1 -> n2 경로와 사이클을 형성합니다.
-    assert_eq!(dag.add_edge(n2, n0, ()), Err(DagError::CycleDetected));
+    assert_eq!(dag.add_edge(n2, n0), Err(DagError::CycleDetected));
     // 자기 자신을 가리키는 간선도 사이클입니다.
-    assert_eq!(dag.add_edge(n0, n0, ()), Err(DagError::CycleDetected));
+    assert_eq!(dag.add_edge(n0, n0), Err(DagError::CycleDetected));
 }
 
 #[test]
@@ -56,10 +56,10 @@ fn test_topological_sort() {
 
     //  n0 --> n1 --> n3
     //   \-> n2 --/
-    dag.add_edge(n0, n1, ()).unwrap();
-    dag.add_edge(n1, n3, ()).unwrap();
-    dag.add_edge(n0, n2, ()).unwrap();
-    dag.add_edge(n2, n3, ()).unwrap();
+    dag.add_edge(n0, n1).unwrap();
+    dag.add_edge(n1, n3).unwrap();
+    dag.add_edge(n0, n2).unwrap();
+    dag.add_edge(n2, n3).unwrap();
 
     let sorted = dag.topological_sort().unwrap();
 
@@ -76,7 +76,7 @@ fn test_remove_edge() {
     let n0 = dag.add_node(());
     let n1 = dag.add_node(());
 
-    dag.add_edge(n0, n1, ()).unwrap();
+    dag.add_edge(n0, n1).unwrap();
     assert!(dag.has_edge(n0, n1));
     assert_eq!(dag.get_indegree(n1).unwrap(), 1);
 
@@ -96,8 +96,8 @@ fn test_remove_node() {
     let n2 = dag.add_node(());
 
     // n0 -> n1 -> n2
-    dag.add_edge(n0, n1, ()).unwrap();
-    dag.add_edge(n1, n2, ()).unwrap();
+    dag.add_edge(n0, n1).unwrap();
+    dag.add_edge(n1, n2).unwrap();
 
     // n1을 삭제하면 n0 -> n1, n1 -> n2 간선이 모두 사라져야 합니다.
     assert!(dag.remove_node(n1).is_ok());
@@ -121,7 +121,7 @@ fn test_clear() {
     let mut dag = Dag::<(), ()>::new();
     let n0 = dag.add_node(());
     let n1 = dag.add_node(());
-    dag.add_edge(n0, n1, ()).unwrap();
+    dag.add_edge(n0, n1).unwrap();
 
     dag.clear();
     assert_eq!(dag.get_all_nodes().len(), 0);

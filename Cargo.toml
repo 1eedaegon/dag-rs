@@ -2,10 +2,18 @@
 name = "dag-rs"
 version = "0.1.0"
 edition = "2024"
+authors = ["Gon ⌬ <d8726243@gmail.com>"]                                       # 본인 정보로 수정
 license = "MIT"
-description = "A Rust library for working with Directed Acyclic Graphs (DAGs)"
+description = "Yet another implementation of a Directed Acyclic Graphs (DAGs)"
 repository = "https://github.com/1eedaegon/dag-rs"
 # keywords = ["dag", "graph", "directed", "acyclic", "topological"]
 # categories = ["data-structures", "algorithms"]
 
 [dependencies]
+
+[dev-dependencies]
+criterion = "0.6.0"
+
+[[bench]]
+name = "dag_benchmark"
+harness = false

@@ -9,7 +9,7 @@ fn bench_add_nodes(c: &mut Criterion) {
     for size in SIZES.iter() {
         group.bench_with_input(BenchmarkId::new("AdjListDag", size), size, |b, &s| {
             b.iter(|| {
-                let mut dag = Dag::<usize, ()>::new();
+                let mut dag = Dag::new();
                 for i in 0..s {
                     dag.add_node(i);
                 }
